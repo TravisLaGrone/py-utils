@@ -1,78 +1,134 @@
 from enum import Enum, auto
-from typing import Iterable, NewType, Any
+from typing import Iterable, NewType, Any, Callable, Union, Optional
 
 E = NewType('E', Any)
 
 
-def contains_weakly_ordered(it: Iterable[E], a: E, b: E) -> bool:
-    """Whether the given iterable contains `a` and `b` in weak order.
+def contains_weakly_ordered(
+        it: Iterable[Optional[E]],
+        a: Optional[E]=None,
+        b: Optional[E]=None,
+        a_matches: Optional[Callable[[Optional[E]], bool]]=None,
+        b_matches: Optional[Callable[[Optional[E]], bool]]=None,
+) -> bool:
+    """Whether the given poset contains `a` and `b` in weak order.
 
-    Returns false if the given iterable does not contain both `a` and `b`.
+    Args:
+        it (Iterable[Optional[E]]): Assumes to be a partially ordered set
+            ("poset"). May contains `None` as an element.
+        a (Optional[E]): The element for which to determine if it occurs before
+            `b` in weak order within `it`. May be `None`, in which case nulls
+            are considered homogeneous.
+        b (Optional[E]): The element for which to determine if it occurs after
+            `a` in weak order within `it`. May be `None`, in which case nulls
+            are considered homogeneous.
+        a_matches (Optional[Callable[[Optional[E]], bool]]): A predicate that
+            matches some element `a`. If non-null, then used instead of `a.__eq__`
+            to identify the "a" element. It is assumed that `a_matches` will not
+            match any element other than "a".
+        a_matches (Optional[Callable[[Optional[E]], bool]]): A predicate that
+            matches some element `b`. If non-null, then used instead of `b.__eq__`
+            to identify the "b" element. It is assumed that `b_matches` will not
+            match any element other than "b".
 
-    Assumptions:
-    - The iterable constitutes a weak partially-ordered set.
-    - Nulls are homogeneous.
+    Returns:
+        bool: Whether `it` contains `a` before `b` in weak order. `False` if `it`
+            does not contain both `a` and `b`.
 
     Tests:
-        >>> it = ['A', 'B', 'C']
-        >>> contains_weakly_ordered(it, 'A', 'A')
+        >>> it = [3, 2, 1]
+        >>> contains_weakly_ordered(it, 3, 1)
         True
-        >>> contains_weakly_ordered(it, 'A', 'B')
+        >>> contains_weakly_ordered(it, 3, 4)
+        False
+        >>> contains_weakly_ordered(it, 4, 3)
+        False
+        >>> contains_weakly_ordered(it, 1, 3)
+        False
+        >>> contains_weakly_ordered(it, 2, 2)
         True
-        >>> contains_weakly_ordered(it, 'A', 'C')
+        >>> contains_weakly_ordered(it,
+        ...                         a_matches=lambda a: a == 3,
+        ...                         b_matches=lambda b: b == 1)
         True
-        >>> contains_weakly_ordered(it, 'A', 'D')
-        False
-        >>> contains_weakly_ordered(it, 'D', 'A')
-        False
-        >>> contains_weakly_ordered(it, 'C', 'A')
-        False
-        >>> contains_weakly_ordered(it, 'B', 'A')
-        False
+        >>> contains_weakly_ordered(it, 3, b_matches=lambda b: b == 1)
+        True
 
     """
-    if a == b:
-        return a in it
-    contains_a = False
+    a_matches = a_matches if a_matches else lambda other: a == other
+    b_matches = b_matches if b_matches else lambda other: b == other
+    it_contains_a = False
     for e in it:
-        if a == e:
-            contains_a = True
-        if b == e:
-            if contains_a:
-                return True
-            else:
-                return False
+        if a_matches(e):
+            it_contains_a = True
+        if b_matches(e):
+            return it_contains_a
     return False
 
 
-def contains_strictly_ordered(it: Iterable[E], a: E, b: E) -> bool:
-    """Whether the given iterable contains `a` and `b` in strict order.
+def contains_strictly_ordered(
+        it: Iterable[Optional[E]],
+        a: Optional[E] = None,
+        b: Optional[E] = None,
+        a_matches: Optional[Callable[[Optional[E]], bool]] = None,
+        b_matches: Optional[Callable[[Optional[E]], bool]] = None,
+) -> bool:
+    """Whether the given poset contains `a` and `b` in strict order.
 
-    Returns false if the given iterable does not contains both `a` and `b`.
-    Returns false if `a` and `b` are equal.
+    Args:
+        it (Iterable[Optional[E]]): Assumes to be a partially ordered set
+            ("poset"). May contains `None` as an element.
+        a (Optional[E]): The element for which to determine if it occurs before
+            `b` in strict order within `it`. May be `None`, in which case nulls
+            are considered homogeneous.
+        b (Optional[E]): The element for which to determine if it occurs after
+            `a` in strict order within `it`. May be `None`, in which case nulls
+            are considered homogeneous.
+        a_matches (Optional[Callable[[Optional[E]], bool]]): A predicate that
+            matches some element `a`. If non-null, then used instead of `a.__eq__`
+            to identify the "a" element. It is assumed that `a_matches` will not
+            match any element other than "a".
+        a_matches (Optional[Callable[[Optional[E]], bool]]): A predicate that
+            matches some element `b`. If non-null, then used instead of `b.__eq__`
+            to identify the "b" element. It is assumed that `b_matches` will not
+            match any element other than "b".
 
-    Assumptions:
-    - The iterable constitutes a strict partially-ordered set.
-    - Nulls are homogeneous.
+    Returns:
+        bool: Whether `it` contains `a` before `b` in strict order. `False` if `it`
+            does not contain both `a` and `b`.
 
     Tests:
-        >>> it = ['A', 'B', 'C']
-        >>> contains_strictly_ordered(it, 'A', 'A')
-        False
-        >>> contains_strictly_ordered(it, 'A', 'B')
+        >>> it = [3, 2, 1]
+        >>> contains_strictly_ordered(it, 3, 1)
         True
-        >>> contains_strictly_ordered(it, 'A', 'C')
+        >>> contains_strictly_ordered(it, 3, 4)
+        False
+        >>> contains_strictly_ordered(it, 4, 3)
+        False
+        >>> contains_strictly_ordered(it, 1, 3)
+        False
+        >>> contains_strictly_ordered(it, 2, 2)
+        False
+        >>> contains_strictly_ordered(it,
+        ...                           a_matches=lambda a: a == 3,
+        ...                           b_matches=lambda b: b == 1)
         True
-        >>> contains_strictly_ordered(it, 'A', 'D')
+        >>> contains_strictly_ordered(it,
+        ...                           a_matches=lambda a: a == 2,
+        ...                           b_matches=lambda b: b == 2)
         False
-        >>> contains_strictly_ordered(it, 'D', 'A')
-        False
-        >>> contains_strictly_ordered(it, 'C', 'A')
-        False
-        >>> contains_strictly_ordered(it, 'B', 'A')
-        False
+        >>> contains_strictly_ordered(it, 3, b_matches=lambda b: b == 1)
+        True
 
     """
-    if a == b:
-        return False
-    return contains_weakly_ordered(it, a, b)
+    a_matches = a_matches if a_matches else lambda other: a == other
+    b_matches = b_matches if b_matches else lambda other: b == other
+    it_contains_a = False
+    a_matched_on = None
+    for e in it:
+        if a_matches(e):
+            it_contains_a = True
+            a_matched_on = e
+        if b_matches(e):
+            return it_contains_a and a_matched_on is not e
+    return False
