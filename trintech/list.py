@@ -3,13 +3,13 @@
 from typing import List, Any, NewType, Optional, Callable, Iterable
 from itertools import dropwhile
 
-E = NewType('Element')
+E = NewType('Element', Any)
 
 
 def lstrip(
         L: List[Optional[E]],
         value: Optional[E]=None,
-        matcher: Optional[Callable[[Optional[E]]], bool]=None,
+        matcher: Optional[Callable[[Optional[E]], bool]]=None,
         inplace=False,
 ) -> List[Optional[E]]:
     if inplace:
@@ -23,7 +23,7 @@ def lstrip(
 def rstrip(
         L: List[Optional[E]],
         value: Optional[E]=None,
-        matcher: Optional[Callable[[Optional[E]]], bool]=None,
+        matcher: Optional[Callable[[Optional[E]], bool]]=None,
         inplace=False,
 ) -> List[Optional[E]]:
     if inplace:
@@ -37,7 +37,7 @@ def rstrip(
 def strip(
         L: List[Optional[E]],
         value: Optional[E]=None,
-        matcher: Optional[Callable[[Optional[E]]], bool]=None,
+        matcher: Optional[Callable[[Optional[E]], bool]]=None,
         inplace=False,
 ) -> List[Optional[E]]:
     matcher = matcher if matcher else lambda e: value == e
@@ -49,7 +49,7 @@ def strip(
 def delwhile(
         L: List[Optional[E]],
         value: Optional[E] = None,
-        matcher: Optional[Callable[[Optional[E]]], bool] = None,
+        matcher: Optional[Callable[[Optional[E]], bool]] = None,
 ) -> List[Optional[E]]:
     matcher = matcher if matcher else lambda e: value == e
     while L and not matcher(L[0]):

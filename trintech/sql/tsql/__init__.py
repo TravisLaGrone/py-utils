@@ -1,7 +1,5 @@
 
 
-import re
-from itertools import *
 from typing import *
 
 from trintech.enum import DefinitionOrderedEnum
@@ -10,7 +8,7 @@ from trintech.string import quote
 
 
 def quote_string(
-        string: str
+        string: str,
 ) -> str:
     """Quotes T-SQL string literal.
 
@@ -31,7 +29,7 @@ def quote_string(
 
 
 def quote_identifier(
-        ident: str
+        ident: str,
 ) -> str:
     """Quotes a T-SQL identifier.
 
@@ -55,14 +53,14 @@ def quote_identifier(
 
 def qualify_identifier(
         parts: Iterable[str],
-        quote=False
+        quote: bool=False,
 ) -> str:
     """Constructs a qualified T-SQL identifier.
 
     Args:
-        parts Iterable[str]: The parts (in order) from which to construct a
+        parts (Iterable[str]): The parts (in order) from which to construct a
             qualified T-SQL identifier.
-        quote: Whether to quote each part according to `quote_identifier`.
+        quote (bool): Whether to quote each part according to `quote_identifier`.
 
     Returns:
         str: A qualified T-SQL identifier consisting of `parts`.
@@ -94,12 +92,16 @@ class QualifiedIdentifier:
         OBJECT = 'object'
         MINOR = 'minor'
 
-    def __init__(self):
-        self._server = None
-        self._database = None
-        self._schema = None
-        self._object = None
-        self._minor = None
+    def __init__(self, server=None, database=None, schema=None, object=None, minor=None):
+        self._server = server
+        self._database = database
+        self._schema = schema
+        self._object = object
+        self._minor = minor
+        if not self._is_valid():
+            raise ValueError("A T-SQL qualified identifier may not have an "
+                             "empty intermediate part with a non-empty predecessor "
+                             "part and a non-empty successor part.")
 
     def __iter__(self):
         return self._server, self._database, self._schema, self._object, self._minor
