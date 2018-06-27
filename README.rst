@@ -1,4 +1,19 @@
+Tooling
+-------
+Project Management:
+- `setuptools`
 
+Dependency Management:
+- `conda`
+
+Environment Management:
+- `conda`
+
+Testing:
+- `pytest`
+
+Documentation:
+- `sphinx`
 
 Tests
 -----
