@@ -1,4 +1,7 @@
+
+
 from enum import Enum, auto
+
 
 class Geneity(Enum):
     HETEROGENEOUS = auto()

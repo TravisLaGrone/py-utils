@@ -1,4 +1,5 @@
-from enum import Enum, auto
+
+
 from typing import Iterable, NewType, Any, Callable, Union, Optional
 
 E = NewType('E', Any)

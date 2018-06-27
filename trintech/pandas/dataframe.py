@@ -1,8 +1,8 @@
 from itertools import count
+from typing import Tuple, Callable, Any, Iterable, Optional
 
 from cytoolz.itertoolz import first
 import pandas as pd
-from typing import Tuple, Callable, Any, Iterable, Optional
 
 from trintech.iter import first_true
 

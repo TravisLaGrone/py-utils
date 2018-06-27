@@ -1,7 +1,6 @@
-from functools import singledispatch
+
+
 from typing import Optional, Union, Callable, Iterable, NewType, Iterator
-import itertools as it
-import cytoolz.itertoolz as itz
 
 E = NewType('Element')
 D = NewType('Default')
