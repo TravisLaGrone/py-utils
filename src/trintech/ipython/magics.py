@@ -16,6 +16,7 @@ class PDir(Magics):
     @line_magic
     def pdir(self, line):
         return sorted(e for e in self.shell.user_ns.keys() if not e.startswith('_'))
+
 MAGICS.append(PDir)
 
 

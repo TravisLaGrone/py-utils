@@ -20,4 +20,4 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # noinspection PyUnresolvedReferences
-import trintech
+import trintech # FIXME: This doesn't work as implemented using the 'src' structure.
