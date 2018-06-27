@@ -1,6 +1,4 @@
-"""
-Utilities for strings.
-"""
+"""Utilities for strings."""
 
 
 from typing import Optional

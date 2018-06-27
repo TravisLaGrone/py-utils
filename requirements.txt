@@ -1,3 +1,7 @@
+setuptools
+pytest
+pytest-datadir
+pytest-runner
 cytoolz
 IPython
 pandas
