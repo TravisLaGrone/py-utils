@@ -1,7 +1,7 @@
 
 
 from enum import Enum
-from trintech.ordering import contains_weakly_ordered, contains_strictly_ordered
+from trintech.order import contains_weakly_ordered, contains_strictly_ordered
 
 
 class OrderedEnum(Enum):
