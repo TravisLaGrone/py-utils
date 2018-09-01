@@ -1,0 +1,77 @@
+{% macro bool(val) -%}
+    {%- if not val -%}
+        {{ 0 }}
+    {%- elif val == 'False' or val == 'None' -%}
+        {{ 0 }}
+    {%- else -%}
+        {{ 1 }}
+    {%- endif -%}
+{%- endmacro %}
+
+{% macro is_present(var) -%}  {# bit-valued boolean #}
+    {{ bool(var is defined and var is not none) }}
+{%- endmacro %}
+
+{% macro is_absent(var) -%}  {# bit-valued boolean #}
+    {{ bool(var is undefined or var is none) }}
+{%- endmacro %}
+
+{% macro reject_while(elems) -%}  {# returns a list #} {# NOT a filter! Will not work on a piped sequence. #} {# Callable to evaluate each elem #}
+    {%- set ns = namespace(idx=0, found=false) -%}
+    {%- for elem in elems -%}
+        {%- if not ns.found and bool(caller(elem)) -%}
+            {%- set ns.idx = ns.idx + 1 -%}
+        {%- else -%}
+            {%- set ns.found = true -%}
+        {%- endif -%}
+    {%- else -%}
+        {{ [] }}  {# empty list #}
+    {%- endfor -%}
+    {{ elems[ns.idx:] }}
+{%- endmacro %}
+
+{% macro reject_until(elems) -%}  {# returns a list #} {# NOT a filter! Will not work on a piped sequence. #} {# Callable to evaluate each elem #}
+    {%- set ns = namespace(idx=0, found=false) -%}
+    {%- for elem in elems -%}
+        {%- if not ns.found and not bool(caller(elem)) -%}
+            {%- set ns.idx = ns.idx + 1 -%}
+        {%- else -%}
+            {%- set ns.found = true -%}
+        {%- endif -%}
+    {%- else -%}
+        {{ [] }}  {# empty list #}
+    {%- endfor -%}
+    {{ elems[ns.idx:] }}
+{%- endmacro %}
+
+{% macro select_while(elems) -%}  {# returns a list #} {# NOT a filter! Will not work on a piped sequence. #} {# Callable to evaluate each elem #}
+    {%- set ns = namespace(idx=0, found=false) -%}
+    {%- for elem in elems -%}
+        {%- if not ns.found and bool(caller(elem)) -%}
+            {%- set ns.idx = ns.idx + 1 -%}
+        {%- else -%}
+            {%- set ns.found = true -%}
+        {%- endif -%}
+    {%- else -%}
+        {{ [] }}  {# empty list #}
+    {%- endfor -%}
+    {{ elems[:ns.idx] }}
+{%- endmacro %}
+
+{% macro select_until(elems) -%}  {# returns a list #} {# NOT a filter! Will not work on a piped sequence. #} {# Callable to evaluate each elem #}
+    {%- set ns = namespace(idx=0, found=false) -%}
+    {%- for elem in elems -%}
+        {%- if not ns.found and not bool(caller(elem)) -%}
+            {%- set ns.idx = ns.idx + 1 -%}
+        {%- else -%}
+            {%- set ns.found = true -%}
+        {%- endif -%}
+    {%- else -%}
+        {{ [] }}  {# empty list #}
+    {%- endfor -%}
+    {{ elems[:ns.idx] }}
+{%- endmacro %}
+
+{% macro delimit(loop, delimiter=',') -%}
+    {{ delimiter if loop.nextelem is defined else '' }}
+{%- endmacro %}
